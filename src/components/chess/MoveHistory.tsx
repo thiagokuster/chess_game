@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useI18n } from '../../services/i18n';
 
 interface MoveHistoryProps {
   history: Array<{
@@ -13,6 +14,7 @@ interface MoveHistoryProps {
 }
 
 export const MoveHistory: React.FC<MoveHistoryProps> = ({ history }) => {
+  const { t } = useI18n();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Group moves into pairs: [WhiteMove, BlackMove]
@@ -35,9 +37,9 @@ export const MoveHistory: React.FC<MoveHistoryProps> = ({ history }) => {
   return (
     <div className="flex flex-col h-full bg-slate-900/50 rounded-xl border border-slate-800/80 overflow-hidden select-none">
       <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/60 border-b border-slate-800 text-xs font-bold text-slate-300 uppercase tracking-wider">
-        <span>Histórico de Lances</span>
+        <span>{t('moveHistory')}</span>
         <span className="font-mono bg-slate-800 px-2 py-0.5 rounded text-indigo-400 border border-slate-700">
-          {history.length} {history.length === 1 ? 'lance' : 'lances'}
+          {history.length} {history.length === 1 ? t('move') : t('moves')}
         </span>
       </div>
 
@@ -45,7 +47,7 @@ export const MoveHistory: React.FC<MoveHistoryProps> = ({ history }) => {
         {movePairs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-slate-500 text-xs py-8">
             <span className="text-lg mb-1">♟️</span>
-            <span>Nenhum movimento ainda</span>
+            <span>{t('noMoves')}</span>
           </div>
         ) : (
           movePairs.map((pair, idx) => {
@@ -61,18 +63,16 @@ export const MoveHistory: React.FC<MoveHistoryProps> = ({ history }) => {
 
                 <div className="flex-1 grid grid-cols-2 gap-2">
                   <span
-                    className={`px-2 py-0.5 rounded ${
-                      isLastWhite ? 'bg-indigo-600/30 text-indigo-300 font-bold border border-indigo-500/40' : 'text-slate-200'
-                    }`}
+                    className={`px-2 py-0.5 rounded ${isLastWhite ? 'bg-indigo-600/30 text-indigo-300 font-bold border border-indigo-500/40' : 'text-slate-200'
+                      }`}
                   >
                     {pair.w}
                   </span>
 
                   {pair.b && (
                     <span
-                      className={`px-2 py-0.5 rounded ${
-                        isLastBlack ? 'bg-indigo-600/30 text-indigo-300 font-bold border border-indigo-500/40' : 'text-slate-300'
-                      }`}
+                      className={`px-2 py-0.5 rounded ${isLastBlack ? 'bg-indigo-600/30 text-indigo-300 font-bold border border-indigo-500/40' : 'text-slate-300'
+                        }`}
                     >
                       {pair.b}
                     </span>

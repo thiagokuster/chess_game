@@ -3,6 +3,7 @@ import { ChessAvatar, UserProfile } from '../../types/chess';
 import { User, Trophy, Flame, Swords, Check, X, Crown, Shield, ImagePlus, Trash2 } from 'lucide-react';
 import { AvatarDisplay } from './AvatarDisplay';
 import { processAvatarImageFile } from '../../utils/avatarImage';
+import { useI18n } from '../../services/i18n';
 
 interface UserProfileModalProps {
   profile: UserProfile;
@@ -22,6 +23,7 @@ const avatarIcons: Record<ChessAvatar, React.ReactNode> = {
 };
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onSave, onClose }) => {
+  const { t } = useI18n();
   const [name, setName] = useState(profile.name);
   const [selectedAvatar, setSelectedAvatar] = useState<ChessAvatar>(profile.avatar);
   const [avatarImage, setAvatarImage] = useState<string | null>(profile.avatarImage ?? null);
@@ -45,7 +47,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
       const dataUrl = await processAvatarImageFile(file);
       setAvatarImage(dataUrl);
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Erro ao carregar imagem.');
+      setUploadError(t('imageUploadError'));
     }
   };
 
@@ -68,8 +70,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
             className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center border border-indigo-500/30 bg-indigo-500/10"
           />
           <div>
-            <h2 className="text-xl font-bold text-[var(--rc-text)] tracking-tight">Seu Perfil de Jogador</h2>
-            <p className="text-xs text-[var(--rc-text-muted)]">Nickname, avatar ou foto personalizada</p>
+            <h2 className="text-xl font-bold text-[var(--rc-text)] tracking-tight">{t('profileTitle')}</h2>
+            <p className="text-xs text-[var(--rc-text-muted)]">{t('profileSubtitle')}</p>
           </div>
         </div>
 
@@ -84,20 +86,20 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
           <div className="bg-[var(--rc-surface-muted)] border border-[var(--rc-border)] rounded-2xl p-3 text-center">
             <div className="flex items-center justify-center text-indigo-400 mb-1">
               <Swords className="w-4 h-4 mr-1" />
-              <span className="text-xs font-semibold">Partidas</span>
+              <span className="text-xs font-semibold">{t('gamesPlayed')}</span>
             </div>
             <span className="font-mono text-xl font-black text-[var(--rc-text)]">{profile.gamesPlayed}</span>
           </div>
           <div className="bg-[var(--rc-surface-muted)] border border-[var(--rc-border)] rounded-2xl p-3 text-center">
             <div className="flex items-center justify-center text-emerald-400 mb-1">
               <Flame className="w-4 h-4 mr-1" />
-              <span className="text-xs font-semibold">Vitórias</span>
+              <span className="text-xs font-semibold">{t('wins')}</span>
             </div>
             <span className="font-mono text-xl font-black text-emerald-500">{profile.wins}</span>
           </div>
           <div className="bg-[var(--rc-surface-muted)] border border-[var(--rc-border)] rounded-2xl p-3 text-center">
             <div className="flex items-center justify-center text-blue-400 mb-1">
-              <span className="text-xs font-semibold">Vitórias %</span>
+              <span className="text-xs font-semibold">{t('winRate')}</span>
             </div>
             <span className="font-mono text-xl font-black text-blue-500">{winRate}%</span>
           </div>
@@ -106,13 +108,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-bold text-[var(--rc-text)] uppercase tracking-wider mb-2">
-              Nickname (Nome na Sala)
+              {t('nicknameLabel')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Digite seu nome..."
+              placeholder={t('namePlaceholder')}
               maxLength={24}
               className="w-full bg-[var(--rc-input)] border border-[var(--rc-border)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--rc-text)] placeholder:text-[var(--rc-text-muted)] focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -120,7 +122,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
 
           <div>
             <label className="block text-xs font-bold text-[var(--rc-text)] uppercase tracking-wider mb-2">
-              Foto personalizada (opcional)
+              {t('customPhoto')}
             </label>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -129,7 +131,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600/90 hover:bg-indigo-500 text-white text-xs font-bold transition-all"
               >
                 <ImagePlus className="w-4 h-4" />
-                Enviar imagem
+                {t('uploadImage')}
               </button>
               {avatarImage && (
                 <button
@@ -138,18 +140,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
                   className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--rc-surface-muted)] text-[var(--rc-text-muted)] text-xs font-semibold border border-[var(--rc-border)]"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Remover foto
+                  {t('removePhoto')}
                 </button>
               )}
             </div>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
-            <p className="text-[10px] text-[var(--rc-text-muted)] mt-2">JPEG, PNG ou WebP — até 2 MB. Fica salvo só no seu navegador.</p>
+            <p className="text-[10px] text-[var(--rc-text-muted)] mt-2">{t('imageLimit')}</p>
             {uploadError && <p className="text-xs text-rose-500 mt-1">{uploadError}</p>}
           </div>
 
           <div>
             <label className="block text-xs font-bold text-[var(--rc-text)] uppercase tracking-wider mb-2">
-              Ícones de avatar (se não usar foto)
+              {t('avatarIcons')}
             </label>
             <div className="grid grid-cols-6 gap-3">
               {avatars.map((av) => (
@@ -157,11 +159,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
                   key={av}
                   type="button"
                   onClick={() => setSelectedAvatar(av)}
-                  className={`relative aspect-square rounded-2xl border flex items-center justify-center transition-all ${
-                    selectedAvatar === av && !avatarImage
+                  className={`relative aspect-square rounded-2xl border flex items-center justify-center transition-all ${selectedAvatar === av && !avatarImage
                       ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-500/20 scale-105'
                       : 'bg-[var(--rc-input)] border-[var(--rc-border)] hover:opacity-100 opacity-70'
-                  }`}
+                    }`}
                 >
                   {avatarIcons[av]}
                   {selectedAvatar === av && !avatarImage && (
@@ -180,14 +181,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ profile, onS
               onClick={onClose}
               className="px-5 py-3 rounded-xl bg-[var(--rc-surface-muted)] hover:opacity-90 text-[var(--rc-text-muted)] text-xs font-bold transition-all"
             >
-              Cancelar
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={!name.trim()}
               className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-indigo-600/20 transition-all"
             >
-              Salvar Alterações
+              {t('saveChanges')}
             </button>
           </div>
         </form>

@@ -5,7 +5,9 @@ import { ChessAvatar, PlayerColorPreference, PublicRoomInfo, TimeControl, UserPr
 import { InstructionsModal } from '../common/InstructionsModal';
 import { UserProfileModal } from '../common/UserProfileModal';
 import { ThemeToggle } from '../common/ThemeToggle';
+import { LanguageSelector } from '../common/LanguageSelector';
 import { AvatarDisplay } from '../common/AvatarDisplay';
+import { useI18n } from '../../services/i18n';
 import { Trophy, Swords, Bot, Users, Sparkles, HelpCircle, Volume2, VolumeX, ArrowRight, Play, Globe, Shield, Clock } from 'lucide-react';
 
 interface LobbyScreenProps {
@@ -31,6 +33,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
   onToggleSound,
   isRealSocketConnected
 }) => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'create' | 'join' | 'bot' | 'local'>('create');
   const [profile, setProfile] = useState<UserProfile>(() => ProfileService.getProfile());
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -57,7 +60,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
     e.preventDefault();
     const code = inputCode.trim().toUpperCase();
     if (!code || code.length < 5) {
-      setJoinError('Por favor, digite um código de sala válido (Ex: X7K9P2)');
+      setJoinError(t('invalidRoomCode'));
       return;
     }
     setJoinError('');
@@ -65,13 +68,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
   };
 
   const formatTimeControlLabel = (tc: TimeControl) => {
-    if (tc === 0) return 'Sem tempo';
-    if (tc === 1) return '1m Bullet';
-    if (tc === 3) return '3m Blitz';
-    if (tc === 5) return '5m Blitz';
-    if (tc === 10) return '10m Rápido';
-    if (tc === 15) return '15m Rápido';
-    return '30m Clássico';
+    if (tc === 0) return t('noTime');
+    if (tc === 1) return t('oneMinuteBullet');
+    if (tc === 3) return t('threeMinuteBlitz');
+    if (tc === 5) return t('fiveMinuteBlitz');
+    if (tc === 10) return t('tenMinuteRapid');
+    if (tc === 15) return t('fifteenMinuteRapid');
+    return t('thirtyMinuteClassical');
   };
 
   return (
@@ -88,7 +91,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             </h1>
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-400 font-medium">
               <span className={`w-2 h-2 rounded-full ${isRealSocketConnected ? 'bg-emerald-400 animate-ping' : 'bg-indigo-400'}`} />
-              <span>{isRealSocketConnected ? 'Servidor Conectado' : 'Modo P2P Sincronizado'}</span>
+              <span>{isRealSocketConnected ? t('connected') : t('localMode')}</span>
             </div>
           </div>
         </div>
@@ -98,18 +101,19 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <button
             onClick={() => setShowInstructionsModal(true)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-all text-xs font-semibold"
-            title="Ver Regras e Instruções"
+            title={t('rules')}
           >
             <HelpCircle className="w-4 h-4 text-indigo-400" />
-            <span className="hidden md:inline">Regras</span>
+            <span className="hidden md:inline">{t('rules')}</span>
           </button>
 
+          <LanguageSelector />
           <ThemeToggle />
 
           <button
             onClick={onToggleSound}
             className="p-2 rounded-xl bg-[var(--rc-surface)] hover:opacity-90 text-[var(--rc-text-muted)] hover:text-[var(--rc-text)] border border-[var(--rc-border)] transition-all"
-            title={soundEnabled ? 'Silenciar som' : 'Ativar som'}
+            title={soundEnabled ? t('soundOn') : t('soundOff')}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-[var(--rc-text-muted)]" />}
           </button>
@@ -117,6 +121,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <button
             onClick={() => setShowProfileModal(true)}
             className="flex items-center gap-2.5 pl-2.5 pr-3 py-1.5 rounded-xl bg-[var(--rc-surface)] hover:opacity-95 border border-[var(--rc-border)] transition-all shadow-sm active:scale-98"
+            title={t('profile')}
           >
             <AvatarDisplay
               avatar={profile.avatar}
@@ -141,13 +146,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             <div className="absolute -right-6 -bottom-6 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
             <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest mb-2">
               <Sparkles className="w-4 h-4" />
-              <span>Plataforma Enxadrista Completa</span>
+              <span>{t('platformTag')}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
-              Desafie Amigos em Tempo Real ou Jogue contra a IA
+              {t('heroTitle')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
-              Crie uma sala privada em um clique e compartilhe o código de 6 dígitos para uma partida oficial de xadrez com roque, en passant, timers e análise.
+              {t('heroDescription')}
             </p>
           </div>
 
@@ -155,50 +160,46 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
             <button
               onClick={() => setActiveTab('create')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'create'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeTab === 'create'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
             >
               <Swords className="w-4 h-4" />
-              <span>Criar Sala</span>
+              <span>{t('createTab')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('join')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'join'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeTab === 'join'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
             >
               <Globe className="w-4 h-4" />
-              <span>Entrar com Código</span>
+              <span>{t('joinTab')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('bot')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'bot'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeTab === 'bot'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
             >
               <Bot className="w-4 h-4" />
-              <span>Jogar vs IA</span>
+              <span>{t('botTab')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('local')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'local'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeTab === 'local'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-98'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
             >
               <Users className="w-4 h-4" />
-              <span>Local (2 Jogadores)</span>
+              <span>{t('localTab')}</span>
             </button>
           </div>
 
@@ -209,11 +210,11 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                   <div>
-                    <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">Configurações da Sala Privada</h3>
-                    <p className="text-xs text-slate-400">Gere um código exclusivo para jogar online com seu amigo</p>
+                    <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">{t('privateRoomSettings')}</h3>
+                    <p className="text-xs text-slate-400">{t('createRoomDescription')}</p>
                   </div>
                   <div className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold border border-indigo-500/30">
-                    2 Jogadores
+                    {t('twoPlayers')}
                   </div>
                 </div>
 
@@ -221,7 +222,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 <div>
                   <label className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
                     <Clock className="w-4 h-4 text-indigo-400" />
-                    <span>Controle de Tempo</span>
+                    <span>{t('timeControl')}</span>
                   </label>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                     {([1, 3, 5, 10, 15, 30, 0] as TimeControl[]).map((tc) => (
@@ -229,11 +230,10 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         key={tc}
                         type="button"
                         onClick={() => setTimeControl(tc)}
-                        className={`py-2.5 px-3 rounded-xl font-mono text-xs sm:text-sm font-bold border transition-all ${
-                          timeControl === tc
-                            ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
+                        className={`py-2.5 px-3 rounded-xl font-mono text-xs sm:text-sm font-bold border transition-all ${timeControl === tc
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
+                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                          }`}
                       >
                         {formatTimeControlLabel(tc)}
                       </button>
@@ -245,7 +245,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 <div>
                   <label className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
                     <Shield className="w-4 h-4 text-amber-400" />
-                    <span>Sua Cor na Partida</span>
+                    <span>{t('playerColor')}</span>
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {(['w', 'b', 'random'] as const).map((col) => (
@@ -253,14 +253,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         key={col}
                         type="button"
                         onClick={() => setPreferredColor(col)}
-                        className={`flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${
-                          preferredColor === col
-                            ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
+                        className={`flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${preferredColor === col
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
+                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                          }`}
                       >
                         <span className="text-lg">{col === 'w' ? '♔' : col === 'b' ? '♚' : '🎲'}</span>
-                        <span>{col === 'w' ? 'Brancas' : col === 'b' ? 'Pretas' : 'Aleatório'}</span>
+                        <span>{col === 'w' ? t('white') : col === 'b' ? t('black') : t('random')}</span>
                       </button>
                     ))}
                   </div>
@@ -273,7 +272,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/25 transition-all transform active:scale-98"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>Criar Sala e Gerar Código</span>
+                  <span>{t('createRoomAction')}</span>
                 </button>
               </div>
             )}
@@ -282,19 +281,19 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             {activeTab === 'join' && (
               <form onSubmit={handleJoinSubmit} className="space-y-6 animate-in fade-in duration-200">
                 <div className="border-b border-slate-800 pb-4">
-                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">Entrar em Partida com Código</h3>
-                  <p className="text-xs text-slate-400">Peça o código de 6 caracteres ao seu amigo que criou a sala</p>
+                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">{t('joinRoomTitle')}</h3>
+                  <p className="text-xs text-slate-400">{t('joinRoomDescription')}</p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                    Código de Acesso da Sala
+                    {t('roomAccessCode')}
                   </label>
                   <input
                     type="text"
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value)}
-                    placeholder="Digite o código (Ex: X7K9P2)"
+                    placeholder={t('codePlaceholder')}
                     maxLength={10}
                     className="w-full bg-slate-950 border-2 border-slate-700 font-mono text-center text-xl sm:text-2xl tracking-widest font-extrabold uppercase rounded-2xl px-6 py-4 text-amber-400 placeholder:text-slate-600 placeholder:font-normal focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
                   />
@@ -307,7 +306,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-emerald-600/25 transition-all transform active:scale-98"
                 >
                   <ArrowRight className="w-5 h-5" />
-                  <span>Entrar na Partida</span>
+                  <span>{t('joinMatch')}</span>
                 </button>
               </form>
             )}
@@ -316,15 +315,15 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             {activeTab === 'bot' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div className="border-b border-slate-800 pb-4">
-                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">Partida Singleplayer contra Computador</h3>
-                  <p className="text-xs text-slate-400">Treine suas aberturas e estratégias contra nossa Engine integrada</p>
+                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">{t('botTitle')}</h3>
+                  <p className="text-xs text-slate-400">{t('botDescription')}</p>
                 </div>
 
                 {/* Difficulty options */}
                 <div>
                   <label className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
                     <Trophy className="w-4 h-4 text-emerald-400" />
-                    <span>Nível de Dificuldade da IA</span>
+                    <span>{t('aiDifficulty')}</span>
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {(['easy', 'medium', 'hard'] as const).map((diff) => (
@@ -332,13 +331,12 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         key={diff}
                         type="button"
                         onClick={() => setBotDifficulty(diff)}
-                        className={`py-3 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${
-                          botDifficulty === diff
-                            ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
+                        className={`py-3 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${botDifficulty === diff
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
+                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                          }`}
                       >
-                        {diff === 'easy' ? '🌱 Iniciante (Nív 1)' : diff === 'medium' ? '⚔️ Intermediário (Nív 2)' : '🔥 Difícil (Nív 3)'}
+                        {diff === 'easy' ? t('beginner') : diff === 'medium' ? t('intermediate') : t('difficult')}
                       </button>
                     ))}
                   </div>
@@ -348,7 +346,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 <div>
                   <label className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
                     <Shield className="w-4 h-4 text-amber-400" />
-                    <span>Sua Cor</span>
+                    <span>{t('playerColor')}</span>
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {(['w', 'b', 'random'] as const).map((col) => (
@@ -356,14 +354,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         key={col}
                         type="button"
                         onClick={() => setBotColor(col)}
-                        className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${
-                          botColor === col
-                            ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
+                        className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm border transition-all ${botColor === col
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
+                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                          }`}
                       >
                         <span className="text-lg">{col === 'w' ? '♔' : col === 'b' ? '♚' : '🎲'}</span>
-                        <span>{col === 'w' ? 'Brancas' : col === 'b' ? 'Pretas' : 'Aleatório'}</span>
+                        <span>{col === 'w' ? t('white') : col === 'b' ? t('black') : t('random')}</span>
                       </button>
                     ))}
                   </div>
@@ -375,7 +372,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/25 transition-all transform active:scale-98"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>Iniciar Partida contra a IA</span>
+                  <span>{t('startBotGame')}</span>
                 </button>
               </div>
             )}
@@ -384,14 +381,14 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             {activeTab === 'local' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div className="border-b border-slate-800 pb-4">
-                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">Modo Pass & Play (2 Jogadores na Mesma Tela)</h3>
-                  <p className="text-xs text-slate-400">Jogue presencialmente no mesmo computador, tablet ou celular</p>
+                  <h3 className="font-extrabold text-lg text-slate-100 tracking-tight">{t('localGameTitle')}</h3>
+                  <p className="text-xs text-slate-400">{t('localGameDescription')}</p>
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
                     <Clock className="w-4 h-4 text-indigo-400" />
-                    <span>Controle de Tempo Global</span>
+                    <span>{t('globalTimeControl')}</span>
                   </label>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                     {([1, 3, 5, 10, 15, 30, 0] as TimeControl[]).map((tc) => (
@@ -399,11 +396,10 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         key={tc}
                         type="button"
                         onClick={() => setTimeControl(tc)}
-                        className={`py-2.5 px-3 rounded-xl font-mono text-xs sm:text-sm font-bold border transition-all ${
-                          timeControl === tc
-                            ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
+                        className={`py-2.5 px-3 rounded-xl font-mono text-xs sm:text-sm font-bold border transition-all ${timeControl === tc
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20 scale-102'
+                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                          }`}
                       >
                         {formatTimeControlLabel(tc)}
                       </button>
@@ -417,7 +413,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-emerald-600/25 transition-all transform active:scale-98"
                 >
                   <Users className="w-5 h-5" />
-                  <span>Iniciar Partida Presencial</span>
+                  <span>{t('startLocalGame')}</span>
                 </button>
               </div>
             )}
@@ -431,13 +427,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             <div className="flex items-center justify-between border-b border-slate-800 pb-3.5 mb-4">
               <div className="flex items-center gap-2 text-slate-100 font-bold">
                 <Globe className="w-4 h-4 text-indigo-400" />
-                <h3 className="text-sm">Salas Públicas em Espera</h3>
+                <h3 className="text-sm">{t('publicRooms')}</h3>
               </div>
               <button
                 onClick={onRefreshRooms}
                 className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
               >
-                ↻ Atualizar
+                {t('refresh')}
               </button>
             </div>
 
@@ -445,8 +441,8 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
               {publicRooms.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 text-slate-500 text-center">
                   <span className="text-2xl mb-2">🌐</span>
-                  <p className="text-xs font-medium">Nenhuma sala pública aberta no momento.</p>
-                  <p className="text-[11px] text-slate-600 mt-0.5">Crie sua sala online ao lado e convide amigos!</p>
+                  <p className="text-xs font-medium">{t('noPublicRooms')}</p>
+                  <p className="text-[11px] text-slate-600 mt-0.5">{t('inviteFriends')}</p>
                 </div>
               ) : (
                 publicRooms.map((room) => (
@@ -462,7 +458,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
-                        <span>Código: <strong className="font-mono text-indigo-300">{room.code}</strong></span>
+                        <span>{t('code')} <strong className="font-mono text-indigo-300">{room.code}</strong></span>
                         <span>•</span>
                         <span>{formatTimeControlLabel(room.timeControl as TimeControl)}</span>
                       </div>
@@ -472,7 +468,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                       onClick={() => onJoinRoom(room.code)}
                       className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs shadow-md shadow-indigo-600/20 opacity-90 group-hover:opacity-100 transition-all transform active:scale-95"
                     >
-                      Jogar
+                      {t('play')}
                     </button>
                   </div>
                 ))
@@ -484,25 +480,25 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <div className="bg-slate-900/80 rounded-3xl border border-slate-800 p-6 shadow-xl">
             <h3 className="font-bold text-sm text-slate-100 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Trophy className="w-4 h-4 text-amber-400" />
-              <span>Resumo do Jogador</span>
+              <span>{t('playerSummary')}</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 font-medium">Vitórias / Derrotas / Empates</span>
+                <span className="text-slate-400 font-medium">{t('winsLossesDraws')}</span>
                 <span className="font-mono font-black text-slate-200">
-                  <span className="text-emerald-400">{profile.wins}V</span> / <span className="text-rose-400">{profile.losses}D</span> / <span className="text-amber-400">{profile.draws}E</span>
+                  <span className="text-emerald-400">{profile.wins}{t('winsShort')}</span> / <span className="text-rose-400">{profile.losses}{t('lossesShort')}</span> / <span className="text-amber-400">{profile.draws}{t('drawsShort')}</span>
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 font-medium">Classificação Rating Elo</span>
+                <span className="text-slate-400 font-medium">{t('ratingLabel')}</span>
                 <span className="font-mono font-black text-amber-400 text-sm">{profile.rating} pts</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 font-medium">Total de Jogos Disputados</span>
-                <span className="font-mono font-black text-indigo-300">{profile.gamesPlayed} partidas</span>
+                <span className="text-slate-400 font-medium">{t('totalGames')}</span>
+                <span className="font-mono font-black text-indigo-300">{profile.gamesPlayed} {t('games')}</span>
               </div>
             </div>
           </div>
@@ -511,7 +507,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-center gap-3">
             <span className="text-2xl">💡</span>
             <p className="leading-relaxed">
-              <strong>Dica:</strong> Em ambientes web, abra duas janelas do navegador lado a lado para simular uma partida multiplayer com o mesmo código instantaneamente!
+              <strong>{t('tip')}</strong> {t('localMultiplayerTip')}
             </p>
           </div>
         </div>
@@ -519,7 +515,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
 
       {/* Footer */}
       <footer className="py-6 px-4 border-t border-slate-800/80 text-center text-xs text-slate-500 font-medium">
-        <p>Royale Chess • Desenvolvido com React, Tailwind CSS e Socket.IO • Regras oficiais completas</p>
+        <p>Royale Chess • {t('footer')}</p>
       </footer>
 
       {/* Modal Dialogs */}

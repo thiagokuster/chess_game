@@ -7,8 +7,10 @@ import { ChatMessage, GameMode, PublicRoomInfo, RoomState, TimeControl, PlayerCo
 import { getServerUrl } from './services/config';
 import { LobbyScreen } from './components/lobby/LobbyScreen';
 import { ActiveRoomView } from './components/chess/ActiveRoomView';
+import { useI18n } from './services/i18n';
 
 export default function App() {
+  const { t } = useI18n();
   const [currentView, setCurrentView] = useState<'lobby' | 'room'>('lobby');
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -106,7 +108,7 @@ export default function App() {
         setChatMessages([]);
         setCurrentView('room');
       } else {
-        alert('Erro ao criar sala: ' + res.error);
+        alert(`${t('roomCreateError')}: ${res.error}`);
       }
     });
   };
@@ -122,7 +124,7 @@ export default function App() {
         setChatMessages([]);
         setCurrentView('room');
       } else {
-        alert('Erro ao entrar na sala: ' + res.error);
+        alert(`${t('roomJoinError')}: ${res.error}`);
       }
     });
   };
@@ -144,7 +146,7 @@ export default function App() {
         // Automatically join the Bot as player 2
         const botPlayer = {
           id: 'bot_engine_' + difficulty,
-          name: `Engine do Xadrez (${difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Médio' : 'Difícil'})`,
+          name: `${t('chessEngine')} (${difficulty === 'easy' ? t('beginner') : difficulty === 'medium' ? t('intermediate') : t('difficult')})`,
           rating: difficulty === 'easy' ? 800 : difficulty === 'medium' ? 1500 : 2200,
           avatar: 'knight' as const
         };
@@ -168,7 +170,7 @@ export default function App() {
     const myProfile = ProfileService.getProfile();
     const p1 = {
       id: 'local_p1_' + Date.now(),
-      name: `${myProfile.name} (Brancas)`,
+      name: `${myProfile.name} (${t('white')})`,
       rating: myProfile.rating,
       avatar: myProfile.avatar
     };
@@ -177,7 +179,7 @@ export default function App() {
       if (res.success && res.roomCode) {
         const p2 = {
           id: 'local_p2_' + Date.now(),
-          name: 'Jogador 2 (Pretas)',
+          name: `${t('playerTwo')} (${t('black')})`,
           rating: myProfile.rating,
           avatar: 'queen' as const
         };
@@ -217,7 +219,7 @@ export default function App() {
 
   const handleSendMessage = (text: string) => {
     if (!roomState) return;
-    const sender = myRole === 'w' ? roomState.players.w?.name || 'Brancas' : myRole === 'b' ? roomState.players.b?.name || 'Pretas' : 'Espectador';
+    const sender = myRole === 'w' ? roomState.players.w?.name || t('white') : myRole === 'b' ? roomState.players.b?.name || t('black') : t('roleSpectator');
     socketService.sendMessage(roomState.code, text, sender);
   };
 
@@ -294,7 +296,7 @@ export default function App() {
       ) : (
         <div className="min-h-screen bg-[var(--rc-page)] flex flex-col items-center justify-center text-[var(--rc-text-muted)]">
           <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-xs font-semibold uppercase tracking-wider">Carregando sala de xadrez...</p>
+          <p className="text-xs font-semibold uppercase tracking-wider">{t('loadingRoom')}</p>
         </div>
       )}
     </>

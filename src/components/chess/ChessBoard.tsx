@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Chess, Square } from 'chess.js';
 import { ChessPiece } from './ChessPiece';
 import { PieceColor } from '../../types/chess';
+import { useI18n } from '../../services/i18n';
 
 interface ChessBoardProps {
   chess: Chess;
@@ -29,6 +30,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   isGameActive,
   lastMove
 }) => {
+  const { t } = useI18n();
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [promotionState, setPromotionState] = useState<PromotionState | null>(null);
 
@@ -124,7 +126,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="relative w-full max-w-[500px] lg:max-w-[600px] aspect-square mx-auto select-none rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-800 bg-slate-900 flex flex-col justify-center animate-board">
+    <div dir="ltr" className="relative w-full max-w-[500px] lg:max-w-[600px] aspect-square mx-auto select-none rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-800 bg-slate-900 flex flex-col justify-center animate-board">
       {/* 8x8 Chess Grid */}
       <div className="grid grid-cols-8 grid-rows-8 w-full h-full">
         {displayRanks.map((rank) =>
@@ -173,9 +175,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 {/* Render Chess Piece */}
                 {piece && (
                   <div
-                    className={`absolute inset-0 flex items-center justify-center p-1.5 transition-transform duration-200 ${
-                      isSelected ? 'scale-110 -translate-y-1 filter drop-shadow-md' : 'hover:scale-105'
-                    }`}
+                    className={`absolute inset-0 flex items-center justify-center p-1.5 transition-transform duration-200 ${isSelected ? 'scale-110 -translate-y-1 filter drop-shadow-md' : 'hover:scale-105'
+                      }`}
                   >
                     <ChessPiece type={piece.type} color={piece.color} />
                   </div>
@@ -203,7 +204,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       {promotionState && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs animate-in zoom-in-95 duration-200">
           <div className="bg-slate-900 border-2 border-indigo-500/80 p-5 rounded-2xl shadow-2xl max-w-xs w-full text-center">
-            <h3 className="text-sm font-bold text-slate-100 uppercase mb-4 tracking-wider">Escolha a Peça para Promoção</h3>
+            <h3 className="text-sm font-bold text-slate-100 uppercase mb-4 tracking-wider">{t('promotePiece')}</h3>
 
             <div className="grid grid-cols-2 gap-3 mb-4">
               {(['q', 'r', 'b', 'n'] as const).map((pType) => (
@@ -216,7 +217,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     <ChessPiece type={pType} color={promotionState.color} />
                   </div>
                   <span className="text-xs font-bold text-slate-300 mt-2">
-                    {pType === 'q' ? 'Dama' : pType === 'r' ? 'Torre' : pType === 'b' ? 'Bispo' : 'Cavalo'}
+                    {pType === 'q' ? t('queen') : pType === 'r' ? t('rook') : pType === 'b' ? t('bishop') : t('knight')}
                   </span>
                 </button>
               ))}
@@ -226,7 +227,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
               onClick={() => setPromotionState(null)}
               className="py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg w-full"
             >
-              Cancelar
+              {t('cancel')}
             </button>
           </div>
         </div>

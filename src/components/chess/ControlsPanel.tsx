@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RotateCcw, Flag, Handshake, FlipHorizontal, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { ThemeToggle } from '../common/ThemeToggle';
+import { useI18n } from '../../services/i18n';
 
 interface ControlsPanelProps {
   onTakeback: () => void;
@@ -24,6 +25,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onToggleSound,
   gameStatus
 }) => {
+  const { t } = useI18n();
   const [showResignConfirm, setShowResignConfirm] = useState(false);
   const isPlaying = gameStatus === 'playing';
 
@@ -35,20 +37,20 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
           onClick={onTakeback}
           disabled={!isPlaying}
           className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition-all active:scale-95"
-          title="Solicitar para voltar o último lance"
+          title={t('undoTitle')}
         >
           <RotateCcw className="w-4 h-4 text-indigo-400" />
-          <span className="hidden sm:inline">Desfazer</span>
+          <span className="hidden sm:inline">{t('undoMove')}</span>
         </button>
 
         <button
           onClick={onDraw}
           disabled={!isPlaying}
           className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition-all active:scale-95"
-          title="Oferecer empate de comum acordo"
+          title={t('offerDrawTitle')}
         >
           <Handshake className="w-4 h-4 text-amber-400" />
-          <span className="hidden sm:inline">Empate</span>
+          <span className="hidden sm:inline">{t('draw')}</span>
         </button>
 
         {showResignConfirm ? (
@@ -60,13 +62,13 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               }}
               className="px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95"
             >
-              Confirmar
+              {t('confirm')}
             </button>
             <button
               onClick={() => setShowResignConfirm(false)}
               className="px-2.5 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg"
             >
-              Cancelar
+              {t('cancel')}
             </button>
           </div>
         ) : (
@@ -74,10 +76,10 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             onClick={() => setShowResignConfirm(true)}
             disabled={!isPlaying}
             className="flex items-center gap-1.5 px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 disabled:opacity-40 disabled:hover:bg-rose-500/10 text-rose-400 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all active:scale-95"
-            title="Desistir da partida"
+            title={t('resignTitle')}
           >
             <Flag className="w-4 h-4" />
-            <span className="hidden sm:inline">Desistir</span>
+            <span className="hidden sm:inline">{t('resign')}</span>
           </button>
         )}
       </div>
@@ -87,7 +89,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <button
           onClick={onFlipBoard}
           className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700 transition-all"
-          title="Inverter posições do tabuleiro (Giradas de 180°)"
+          title={t('flipBoard')}
         >
           <FlipHorizontal className="w-4 h-4" />
         </button>
@@ -95,7 +97,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <button
           onClick={onToggleSound}
           className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700 transition-all"
-          title={soundEnabled ? 'Silenciar efeitos sonoros' : 'Ativar efeitos sonoros'}
+          title={`${t('soundEffects')}: ${soundEnabled ? t('soundOn') : t('soundOff')}`}
         >
           {soundEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
         </button>
@@ -103,10 +105,10 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <button
           onClick={onLeave}
           className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold rounded-lg border border-slate-700 transition-all"
-          title="Sair para o Lobby Principal"
+          title={t('backToLobby')}
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="hidden md:inline">Lobby</span>
+          <span className="hidden md:inline">{t('lobby')}</span>
         </button>
       </div>
     </div>

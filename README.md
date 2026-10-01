@@ -22,6 +22,7 @@ Ainda não publicado. O link da aplicação será adicionado quando houver um de
 - Chat durante a partida
 - Histórico de lances e exportação em PGN
 - Perfil local com rating Elo e estatísticas
+- Interface disponível em português, inglês, espanhol, chinês simplificado, hindi e árabe
 - Reconexão e validação de lances no servidor Socket.IO
 - Fallback de multiplayer entre abas do mesmo navegador via `BroadcastChannel`
 
