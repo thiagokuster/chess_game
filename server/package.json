@@ -1,0 +1,17 @@
+{
+  "name": "royale-chess-server",
+  "version": "1.0.0",
+  "description": "Servidor WebSocket em Node.js com Socket.IO para o Royale Chess Online Multiplayer",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "chess.js": "^1.0.0-beta.6",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}
